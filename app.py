@@ -3,9 +3,22 @@ from werkzeug.security import generate_password_hash, check_password_hash
 
 app = Flask(__name__)
 app.secret_key = "secret-key"
+from flask_sqlalchemy import SQLAlchemy
+import pymysql
+pymysql.install_as_MySQLdb()
 
-# Remplace la base MySQL par une liste Python
-users = []  # Exemple : {"mail": "test@test.com", "password": "hash"}
+app.config['SQLALCHEMY_DATABASE_URI'] = "mysql://root:qomNudGnKknSRUOtDsVOMclmIXAuyYRR@caboose.proxy.rlwy.net:40805/railway"
+app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
+
+db = SQLAlchemy(app)
+
+
+class User(db.Model):
+    __tablename__ = 'users'
+    id = db.Column(db.Integer, primary_key=True)
+    mail = db.Column(db.String(255), unique=True, nullable=False)
+    password = db.Column(db.String(255), nullable=False)
+
 
 @app.route("/")
 def home():
@@ -19,19 +32,21 @@ def signup():
         mail = request.form["mail"]
         password = request.form["password"]
 
-        # Vérifier si l'utilisateur existe déjà
-        for u in users:
-            if u["mail"] == mail:
-                return "Utilisateur déjà existant"
-
-        # Ajouter l'utilisateur
-        users.append({
-            "mail": mail,
-            "password": generate_password_hash(password)
-        })
-
+        # Vérifier si l'utilisateur existe déjà dans Railway 
+        user = User.query.filter_by(mail=mail).first() 
+        if user:
+            return "Utilisateur déjà existant"
+        
+        # Ajouter l'utilisateur dans Railway 
+        new_user = User( 
+                        mail=mail, 
+                        password=generate_password_hash(password) 
+                        )
+        db.session.add(new_user)
+        db.session.commit()
+        
         return redirect("/login")
-
+    
     return render_template("signup.html")
 
 @app.route("/login", methods=["GET", "POST"])
@@ -40,11 +55,12 @@ def login():
         mail = request.form["mail"]
         password = request.form["password"]
 
-        # Vérifier l'utilisateur
-        for u in users:
-            if u["mail"] == mail and check_password_hash(u["password"], password):
-                session["user"] = mail
-                return redirect("/")
+        # Chercher l'utilisateur dans Railway
+        user = User.query.filter_by(mail=mail).first()
+
+        if user and check_password_hash(user.password, password):
+            session["user"] = mail
+            return redirect("/")
 
         return "Identifiants incorrects"
 
