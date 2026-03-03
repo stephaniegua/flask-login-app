@@ -1,0 +1,15 @@
+{% extends "base.html" %}
+
+{% set title = "Accueil" %}
+
+{% block content %}
+
+
+{% if user %}
+<h2>Bonjour {{ user }}</h2>
+{% else %}
+<h2>Bonjour utilisateur anonyme</h2>
+{% endif %}
+
+
+{% endblock %}
