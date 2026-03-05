@@ -1,8 +1,9 @@
 from flask import Flask, render_template, request, redirect, session
 from werkzeug.security import generate_password_hash, check_password_hash
+import os
 
 app = Flask(__name__)
-app.secret_key = "secret-key"
+app.secret_key = os.environ.get("SECRET_KEY", os.urandom(24))
 from flask_sqlalchemy import SQLAlchemy
 import pymysql
 pymysql.install_as_MySQLdb()
