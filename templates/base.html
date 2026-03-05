@@ -1,18 +1,24 @@
 
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <title>{{ title if title else "Mon site" }}</title>
+
+    {% include "partials/head.html" %}
+</head>
+
 <body>
-{% include "partials/head.html" %}
-{% include "partials/body.html" %}
 
-<main class="container mt-4">   
-{% block content %}{% endblock %}
-</main>
+    {% include "partials/body.html" %}
 
+    <main class="container mt-4">
+        {% block content %}{% endblock %}
+    </main>
 
-{% include "partials/footer.html" %}
-
+    {% include "partials/footer.html" %}
 
 </body>
-
-
+</html>
 
 
