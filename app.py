@@ -24,6 +24,8 @@ def signup():
     if request.method == "POST":
         mail = request.form["mail"]
         password = request.form["password"]
+        nom = request.form["nom"]
+        prenom = request.form["prenom"]
 
         # Vérifier si l'utilisateur existe déjà
         user = supabase.table("users").select("*").eq("mail", mail).execute()
@@ -32,7 +34,7 @@ def signup():
             return "Utilisateur déjà existant"
 
         # Ajouter l'utilisateur
-         supabase.table("users").insert({
+        supabase.table("users").insert({
             "nom": nom,
             "prenom": prenom,
             "mail": mail,
