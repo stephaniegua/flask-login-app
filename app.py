@@ -32,7 +32,9 @@ def signup():
             return "Utilisateur déjà existant"
 
         # Ajouter l'utilisateur
-        supabase.table("users").insert({
+         supabase.table("users").insert({
+            "nom": nom,
+            "prenom": prenom,
             "mail": mail,
             "password": generate_password_hash(password)
         }).execute()
